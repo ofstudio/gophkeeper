@@ -1,0 +1,67 @@
+syntax = "proto3";
+package api;
+option go_package = "/internal/api";
+
+// SyncServiceV1 is the service for syncing vault data between the client and the server.
+service SyncServiceV1 {
+  rpc SyncItems (SyncItemsRequest) returns (SyncItemsResponse) {}
+  rpc SyncAttachments (SyncAttachmentsRequest) returns (SyncAttachmentsResponse) {}
+  rpc SyncKeys (SyncKeysRequest) returns (SyncKeysResponse) {}
+}
+
+// SyncItem is a single encrypted vault item to be synced.
+message SyncItem {
+  bytes id = 1;
+  int64 updated_at = 2;
+  bytes meta_encrypted = 3;
+  bytes data_encrypted = 4;
+}
+
+// SyncItemsRequest - sends synchronized vault items from client to server
+message SyncItemsRequest {
+  int64 last_synced_at = 1;
+  repeated SyncItem sync_items = 2;
+}
+
+// SyncItemsResponse - returns synchronized vault items from server to client
+message SyncItemsResponse {
+  repeated SyncItem sync_items = 1;
+  int64 server_time = 2;
+}
+
+// SyncAttachment is a single encrypted vault attachment to be synced.
+message SyncAttachment {
+  bytes id = 1;
+  int64 updated_at = 2;
+  bytes meta_encrypted = 3;
+  bytes data_encrypted = 4;
+}
+
+// SyncAttachmentsRequest sends synchronized vault attachments from client to server
+message SyncAttachmentsRequest {
+  int64 last_synced_at = 1;
+  repeated SyncAttachment sync_attachments = 2;
+}
+
+// SyncAttachmentsResponse returns synchronized vault attachments from server to client
+message SyncAttachmentsResponse {
+  repeated SyncAttachment sync_attachments = 1;
+}
+
+// SyncKeys is an encrypted vault keys to be synced.
+message SyncKeys {
+  bytes master_key_encrypted = 1;
+  bytes salt = 2;
+  int64 updated_at = 3;
+}
+
+// SyncKeysRequest sends synchronized vault keys from client to server
+message SyncKeysRequest {
+  int64 last_synced_at = 1;
+  optional SyncKeys sync_keys = 2;
+}
+
+// SyncKeysResponse returns synchronized vault keys from server to client
+message SyncKeysResponse {
+  optional SyncKeys sync_keys = 1;
+}

@@ -1,0 +1,33 @@
+// boltvault repository models
+syntax = "proto3";
+package boltvault;
+option go_package = "./boltvault";
+
+// VaultItem is a struct for storing items in the vault
+message VaultItem {
+  int64 updated_at = 1;
+  bytes meta_encrypted = 2;
+  bytes data_encrypted = 3;
+}
+
+// VaultAttachment is a struct for storing attachments metadata in the vault
+message VaultAttachment{
+  int64 updated_at = 1;
+  bytes meta_encrypted = 2;
+}
+
+// VaultKeys is a struct for storing keys in the vault
+message VaultKeys {
+  bytes master_key_encrypted = 1;
+  bytes salt = 2;
+  int64 updated_at = 3;
+}
+
+// VaultSyncServer is a struct for storing sync server info in the vault
+message VaultSyncServer {
+  string url = 1;
+  string username = 2;
+  bytes access_token = 3;
+  bytes refresh_token = 4;
+  int64 last_synced_at = 5;
+}

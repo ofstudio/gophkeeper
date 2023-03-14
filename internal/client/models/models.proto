@@ -1,0 +1,97 @@
+syntax = "proto3";
+package models;
+option go_package = "./models";
+
+// Item is a full item data (metadata, fields, attachments metadata)
+message Item {
+  bytes id = 1;
+  int64 updated_at = 2;
+  ItemMeta meta = 3;
+  ItemData data = 4;
+}
+
+// ItemOverview is a limited subset of item data (metadata, etc.)
+// It is used to display a list of items.
+// It does not contain sensitive data like passwords and keys.
+// So it can be safely stored in RAM for the lifetime of the application
+message ItemOverview {
+  bytes id = 1;
+  int64 updated_at = 2;
+  ItemMeta meta = 3;
+}
+
+// ItemType is a type of an item
+enum ItemType {
+  NONE = 0; // ItemType_NONE is used for items without concrete type
+  LOGIN = 1; // ItemType_LOGIN is used for items with login, password
+  SECURE_KEY = 2; // ItemType_SECURE_KEY is used for items with key/password
+  EMAIL_ACCOUNT = 3; // ItemType_EMAIL_ACCOUNT is used for email accounts
+  BANK_CARD = 4; // ItemType_BANK_CARD is used for bank cards
+  IDENTITY = 5; // ItemType_IDENTITY is used for identities like passport or driver license
+  SECURE_NOTE = 6; // ItemType_SECURE_NOTE is used for secure notes
+  SECURE_FILE = 7; // ItemType_SECURE_FILE is used for secure files
+  SERVER_CREDS = 8; // ItemType_SERVER_CREDS is used for server credentials
+  WIRELESS_ROUTER = 9; // ItemType_WIRELESS_ROUTER is used for WiFi router credentials
+  SOFTWARE_LICENSE = 10; // ItemType_SOFTWARE_LICENSE is used for software licenses
+}
+
+// ItemMeta is a metadata of an item.
+// Contains only public data.
+message ItemMeta {
+  string title = 1;
+  ItemType type = 2;
+  int64 created_at = 3;
+  bool deleted = 4;
+}
+
+// ItemData contains sensitive data of an item.
+message ItemData {
+  repeated Field fields = 1;
+  repeated bytes attachments = 2;
+}
+
+
+// FieldType is a type of an item field
+enum FieldType {
+  TEXT = 0; // FieldType_TEXT is used for single-line text fields
+  SECRET = 1; // FieldType_SECRET is used for secret fields like passwords
+  NOTE = 2; // FieldType_NOTE is used for multi-line text fields
+  URL = 3; // FieldType_URL is used for URL fields
+  EMAIL = 4; // FieldType_EMAIL is used for email fields
+  PHONE = 5; // FieldType_PHONE is used for phone fields
+  BANK_CARD_NUMBER = 6; // FieldType_BANK_CARD_NUMBER is used for bank card number fields
+  DATE = 7; // FieldType_DATE is used for date fields
+  MONTH_YEAR = 8; // FieldType_MONTH_YEAR is used for month/year fields
+}
+
+// Field is a field of an item
+message Field {
+  uint32 order = 1;
+  string title = 2;
+  FieldType type = 3;
+  bytes value = 4;
+}
+
+// AttachmentOverview is a limited subset of item attachment data (metadata, etc.)
+// It can be safely stored in RAM for the lifetime of the application
+message AttachmentOverview {
+  bytes id = 1;
+  int64 updated_at = 2;
+  AttachmentMeta meta = 3;
+}
+
+// AttachmentMeta is a metadata of an attachment.
+message AttachmentMeta {
+  string file_name = 1;
+  uint64 file_size = 2;
+  bool deleted = 3;
+}
+
+// SyncServer is a configuration for a sync server
+message SyncServer {
+  string url = 1;
+  string username = 2;
+  bytes access_token = 3;
+  bytes refresh_token = 4;
+  int64 last_synced_at = 5;
+}
