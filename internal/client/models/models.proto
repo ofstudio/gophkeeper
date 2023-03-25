@@ -1,0 +1,86 @@
+syntax = "proto3";
+package models;
+option go_package = "./models";
+
+// ItemMeta is a metadata of an item.
+// Contains no sensitive data like passwords and keys.
+message ItemMeta {
+  bytes id = 1; // Id is an ID of an item
+  int64 created_at = 2; // CreatedAt is a timestamp of item creation
+  int64 updated_at = 3; // UpdatedAt is a timestamp of item update
+  string title = 4; // Title is a title of an item
+  ItemType type = 5; // Type is a type of an item
+  bool deleted = 6; // Deleted is true if item is deleted
+  repeated bytes attachments = 7; // Attachments contains IDs of item attachments
+}
+
+// ItemType is a type of an item
+enum ItemType {
+  NONE = 0; // ItemType_NONE is used for items without concrete type
+  LOGIN = 1; // ItemType_LOGIN is used for items with login, password
+  SECURE_KEY = 2; // ItemType_SECURE_KEY is used for items with key/password
+  EMAIL_ACCOUNT = 3; // ItemType_EMAIL_ACCOUNT is used for email accounts
+  BANK_CARD = 4; // ItemType_BANK_CARD is used for bank cards
+  IDENTITY = 5; // ItemType_IDENTITY is used for identities like passport or driver license
+  SECURE_NOTE = 6; // ItemType_SECURE_NOTE is used for secure notes
+  SECURE_FILE = 7; // ItemType_SECURE_FILE is used for secure files
+  SERVER_CREDS = 8; // ItemType_SERVER_CREDS is used for server credentials
+  WIRELESS_ROUTER = 9; // ItemType_WIRELESS_ROUTER is used for WiFi router credentials
+  SOFTWARE_LICENSE = 10; // ItemType_SOFTWARE_LICENSE is used for software licenses
+}
+
+// ItemData is a data of an item. Contains sensitive data like passwords and keys.
+message ItemData {
+  repeated Field fields = 1; // Fields is a list of item fields
+}
+
+// Field is a field of an item
+message Field {
+  uint32 order = 1; // Order is a field order on the screen form
+  string title = 2; // Title is a title of a field
+  FieldType type = 3; // Type is a type of a field
+  bytes value = 4; // Value is a value of a field
+}
+
+
+// FieldType is a type of an item field
+enum FieldType {
+  TEXT = 0; // FieldType_TEXT is used for single-line text fields
+  SECRET = 1; // FieldType_SECRET is used for secret fields like passwords
+  NOTE = 2; // FieldType_NOTE is used for multi-line text fields
+  URL = 3; // FieldType_URL is used for URL fields
+  EMAIL = 4; // FieldType_EMAIL is used for email fields
+  PHONE = 5; // FieldType_PHONE is used for phone fields
+  BANK_CARD_NUMBER = 6; // FieldType_BANK_CARD_NUMBER is used for bank card number fields
+  DATE = 7; // FieldType_DATE is used for date fields
+  MONTH_YEAR = 8; // FieldType_MONTH_YEAR is used for month/year fields
+}
+
+
+// AttachmentMeta is a metadata of an attachment.
+// Contains no sensitive data.
+message AttachmentMeta {
+  bytes id = 1; // Id is an ID of an attachment
+  int64 created_at = 2; // CreatedAt is a timestamp of attachment creation
+  int64 updated_at = 3; // UpdatedAt is a timestamp of attachment update
+  string file_name = 4; // FileName is a file name of an attachment
+  uint64 file_size = 5; // FileSize is a file size of an attachment
+  bool deleted = 6; // Deleted is true if attachment is deleted
+}
+
+// Keys contains vault encryption keys
+message Keys {
+  int64 updated_at = 1; // UpdatedAt is a timestamp of keys update
+  bytes master_key_encrypted = 2; // MasterKeyEncrypted is a master key encrypted with a user master password and salt
+  bytes salt = 3; // Salt is a salt used to encrypt master key
+}
+
+// SyncServer is a configuration for a sync server
+message SyncServer {
+  string url = 1; // URL is a URL of a sync server
+  string username = 2; // Username is a username for a sync server
+  bytes refresh_token = 3; // RefreshToken is a refresh token for a sync server
+  int64 last_synced_at = 4; // LastSyncedAt is a timestamp of last sync with this sync server
+}
+
+

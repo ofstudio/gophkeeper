@@ -1,0 +1,74 @@
+syntax = "proto3";
+package api;
+option go_package = "/internal/api";
+
+// AuthServiceV1 is a service for managing user accounts.
+service AuthServiceV1 {
+  // Register creates a new user account.
+  rpc Register (RegisterRequest) returns (Empty) {}
+  // Login authenticates a user and returns a JWT access token and refresh token.
+  rpc Login (AuthRequest) returns (AuthResponse) {}
+  // Refresh exchanges a refresh token for a new access token and refresh token.
+  rpc Refresh (RefreshRequest) returns (RefreshResponse) {}
+  // UserInfo returns information about the current user.
+  rpc UserInfo (Empty) returns (UserInfoResponse) {}
+  // ChangePassword changes the password for the current user.
+  rpc ChangePassword (ChangePasswordRequest) returns (Empty) {}
+  // ChangeUsername changes the username for the current user.
+  rpc ChangeUsername (ChangeUsernameRequest) returns (Empty) {}
+  // DeleteAccount deletes the current user account.
+  rpc DeleteAccount (DeleteAccountRequest) returns (Empty) {}
+}
+
+// RegisterRequest is the request for the Register method.
+message RegisterRequest {
+  string username = 1;
+  string password = 2;
+}
+
+// AuthRequest is the request for the Login method.
+message AuthRequest {
+  string username = 1;
+  string password = 2;
+}
+
+// AuthResponse is the response for the Login method.
+message AuthResponse {
+  bytes access_token = 1;
+  bytes refresh_token = 2;
+}
+
+// RefreshRequest is the request for the Refresh method.
+message RefreshRequest {
+  bytes refresh_token = 1;
+}
+
+// RefreshResponse is the response for the Refresh method.
+message RefreshResponse {
+  bytes access_token = 1;
+  bytes refresh_token = 2;
+}
+
+// UserInfoResponse is the response for the UserInfo method.
+message UserInfoResponse {
+  string username = 1;
+}
+
+// ChangePasswordRequest is the request for the ChangePassword method.
+message ChangePasswordRequest {
+  string old_password = 1;
+  string new_password = 2;
+}
+
+// ChangeUsernameRequest is the request for the ChangeUsername method.
+message ChangeUsernameRequest {
+  string new_username = 1;
+  string password = 2;
+}
+
+// DeleteAccountRequest is the request for the DeleteAccount method.
+message DeleteAccountRequest {
+  string password = 1;
+}
+
+message Empty {}
