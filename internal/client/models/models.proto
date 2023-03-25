@@ -2,22 +2,16 @@ syntax = "proto3";
 package models;
 option go_package = "./models";
 
-// Item is a full item data (metadata, fields, attachments metadata)
-message Item {
-  bytes id = 1;
-  int64 updated_at = 2;
-  ItemMeta meta = 3;
-  ItemData data = 4;
-}
-
-// ItemOverview is a limited subset of item data (metadata, etc.)
-// It is used to display a list of items.
-// It does not contain sensitive data like passwords and keys.
-// So it can be safely stored in RAM for the lifetime of the application
-message ItemOverview {
-  bytes id = 1;
-  int64 updated_at = 2;
-  ItemMeta meta = 3;
+// ItemMeta is a metadata of an item.
+// Contains no sensitive data like passwords and keys.
+message ItemMeta {
+  bytes id = 1; // Id is an ID of an item
+  int64 created_at = 2; // CreatedAt is a timestamp of item creation
+  int64 updated_at = 3; // UpdatedAt is a timestamp of item update
+  string title = 4; // Title is a title of an item
+  ItemType type = 5; // Type is a type of an item
+  bool deleted = 6; // Deleted is true if item is deleted
+  repeated bytes attachments = 7; // Attachments contains IDs of item attachments
 }
 
 // ItemType is a type of an item
@@ -35,19 +29,17 @@ enum ItemType {
   SOFTWARE_LICENSE = 10; // ItemType_SOFTWARE_LICENSE is used for software licenses
 }
 
-// ItemMeta is a metadata of an item.
-// Contains only public data.
-message ItemMeta {
-  string title = 1;
-  ItemType type = 2;
-  int64 created_at = 3;
-  bool deleted = 4;
+// ItemData is a data of an item. Contains sensitive data like passwords and keys.
+message ItemData {
+  repeated Field fields = 1; // Fields is a list of item fields
 }
 
-// ItemData contains sensitive data of an item.
-message ItemData {
-  repeated Field fields = 1;
-  repeated bytes attachments = 2;
+// Field is a field of an item
+message Field {
+  uint32 order = 1; // Order is a field order on the screen form
+  string title = 2; // Title is a title of a field
+  FieldType type = 3; // Type is a type of a field
+  bytes value = 4; // Value is a value of a field
 }
 
 
@@ -64,34 +56,31 @@ enum FieldType {
   MONTH_YEAR = 8; // FieldType_MONTH_YEAR is used for month/year fields
 }
 
-// Field is a field of an item
-message Field {
-  uint32 order = 1;
-  string title = 2;
-  FieldType type = 3;
-  bytes value = 4;
-}
-
-// AttachmentOverview is a limited subset of item attachment data (metadata, etc.)
-// It can be safely stored in RAM for the lifetime of the application
-message AttachmentOverview {
-  bytes id = 1;
-  int64 updated_at = 2;
-  AttachmentMeta meta = 3;
-}
 
 // AttachmentMeta is a metadata of an attachment.
+// Contains no sensitive data.
 message AttachmentMeta {
-  string file_name = 1;
-  uint64 file_size = 2;
-  bool deleted = 3;
+  bytes id = 1; // Id is an ID of an attachment
+  int64 created_at = 2; // CreatedAt is a timestamp of attachment creation
+  int64 updated_at = 3; // UpdatedAt is a timestamp of attachment update
+  string file_name = 4; // FileName is a file name of an attachment
+  uint64 file_size = 5; // FileSize is a file size of an attachment
+  bool deleted = 6; // Deleted is true if attachment is deleted
+}
+
+// Keys contains vault encryption keys
+message Keys {
+  int64 updated_at = 1; // UpdatedAt is a timestamp of keys update
+  bytes master_key_encrypted = 2; // MasterKeyEncrypted is a master key encrypted with a user master password and salt
+  bytes salt = 3; // Salt is a salt used to encrypt master key
 }
 
 // SyncServer is a configuration for a sync server
 message SyncServer {
-  string url = 1;
-  string username = 2;
-  bytes access_token = 3;
-  bytes refresh_token = 4;
-  int64 last_synced_at = 5;
+  string url = 1; // URL is a URL of a sync server
+  string username = 2; // Username is a username for a sync server
+  bytes refresh_token = 3; // RefreshToken is a refresh token for a sync server
+  int64 last_synced_at = 4; // LastSyncedAt is a timestamp of last sync with this sync server
 }
+
+

@@ -50,9 +50,9 @@ message SyncAttachmentsResponse {
 
 // SyncKeys is an encrypted vault keys to be synced.
 message SyncKeys {
-  bytes master_key_encrypted = 1;
-  bytes salt = 2;
-  int64 updated_at = 3;
+  int64 updated_at = 1;
+  bytes master_key_encrypted = 2;
+  bytes salt = 3;
 }
 
 // SyncKeysRequest sends synchronized vault keys from client to server

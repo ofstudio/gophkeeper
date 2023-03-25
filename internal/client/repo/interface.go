@@ -1,9 +1,6 @@
 package repo
 
 import (
-	"io"
-
-	"github.com/ofstudio/gophkeeper/internal/api"
 	"github.com/ofstudio/gophkeeper/internal/client/models"
 )
 
@@ -31,66 +28,52 @@ type Vault interface {
 
 // VaultItems is the interface for managing items in the vault
 type VaultItems interface {
-	// ItemCreate creates a new item in the vault
-	ItemCreate(title string, itemType models.ItemType, fields ...*models.Field) (*models.ItemOverview, error)
-	// ItemUpdate updates an existing item in the vault
-	ItemUpdate(id []byte, title string, fields ...*models.Field) (*models.ItemOverview, error)
-	// ItemDelete deletes an item from the vault
+	// ItemPut creates new item or updates an existing item in the vault
+	ItemPut(meta *models.ItemMeta, data *models.ItemData) (*models.ItemMeta, error)
+	// ItemMetaGet returns an item meta from the vault
+	ItemMetaGet(id []byte) (*models.ItemMeta, error)
+	// ItemDataGet returns the data of an item
+	ItemDataGet(id []byte) (*models.ItemData, error)
+	// ItemDelete marks an item as deleted
 	ItemDelete(id []byte) error
-	// ItemGet returns an item from the vault
-	ItemGet(id []byte) (*models.Item, error)
-	// ItemOverviewList returns a list of overviews of all items in the vault.
-	ItemOverviewList() ([]models.ItemOverview, error)
-	// ItemOverviewFilter returns a list of overviews of all items in the vault that match the filter
-	ItemOverviewFilter(filter string) ([]models.ItemOverview, error)
-	// ItemAttachmentAdd adds an attachment to an item
-	ItemAttachmentAdd(id, attachmentID []byte) error
-	// ItemAttachmentRemove removes an attachment from an item
-	ItemAttachmentRemove(id, attachmentID []byte) error
-	// ItemSyncOut returns a list of items that have been changed since the given timestamp
-	ItemSyncOut(since int64) ([]api.SyncItem, error)
-	// ItemSyncIn updates the vault with the given sync item
-	ItemSyncIn(syncItem *api.SyncItem) error
+	// ItemMetaList returns a list of all items meta in the vault.
+	ItemMetaList() (models.ItemMetaList, error)
+	// ItemMetaFilter returns a list of all items meta in the vault that match the filter
+	ItemMetaFilter(filter string) (models.ItemMetaList, error)
 }
 
 // VaultAttachments is the interface for managing attachments in the vault
 type VaultAttachments interface {
-	// AttachmentAdd adds a new attachment to the vault
-	AttachmentAdd(fileName string, r io.Reader) (*models.AttachmentOverview, error)
-	// AttachmentRemove marks an attachment as deleted
-	AttachmentRemove(id []byte) error
-	// AttachmentOverviewGet returns an overview of an attachment
-	AttachmentOverviewGet(id []byte) (*models.AttachmentOverview, error)
-	// AttachmentDataGet returns the data of an attachment
-	AttachmentDataGet(id []byte) (io.Reader, error)
-	// AttachmentSyncOut returns a list of encrypted attachments that have been changed since the given timestamp
-	AttachmentSyncOut(since int64) ([]api.SyncAttachment, error)
-	// AttachmentSyncIn updates the vault with the given sync attachment
-	AttachmentSyncIn(syncAttachment *api.SyncAttachment) error
+	// AttachmentPut adds a new attachment or updates an existing attachment in the vault
+	AttachmentPut(meta *models.AttachmentMeta, data []byte) (*models.AttachmentMeta, error)
+	// AttachmentMetaGet returns meta of an attachment
+	AttachmentMetaGet(id []byte) (*models.AttachmentMeta, error)
+	// AttachmentDataGet returns data of an attachment
+	AttachmentDataGet(id []byte) ([]byte, error)
+	// AttachmentDelete marks an attachment as deleted
+	AttachmentDelete(id []byte) error
 }
 
 // VaultSyncServer is the interface for managing the sync server configuration
 type VaultSyncServer interface {
+	// SyncServerPut sets the sync server configuration
+	SyncServerPut(srv *models.SyncServer) error
 	// SyncServerGet returns the sync server configuration
 	SyncServerGet() (*models.SyncServer, error)
-	// SyncServerSet sets the sync server configuration
-	SyncServerSet(srv *models.SyncServer) error
-	// SyncServerRefreshTokenSet sets the refresh token for the sync server
-	SyncServerRefreshTokenSet(token []byte) error
-	// SyncServerLastSyncSet sets the timestamp of the last sync
-	SyncServerLastSyncSet(timestamp int64) error
+	// SyncServerPurge removes the sync server configuration
+	SyncServerPurge() error
 }
 
 // VaultKeys is the interface for managing the vault keys
 type VaultKeys interface {
-	// GenerateNewKeys generates new keys for the vault and encrypts them with the given master password
-	GenerateNewKeys(masterPass []byte) error
-	// ReEncryptKeys re-encrypts the keys with the new master password
-	ReEncryptKeys(oldMasterPass, newMasterPass []byte) error
-	// HasKeys returns true if the vault keys are available
-	HasKeys() bool
-	// KeysSyncOut returns the encrypted keys if they have been changed since the given timestamp
-	KeysSyncOut(since int64) (*api.SyncKeys, error)
-	// KeysSyncIn updates the vault with the given encrypted keys
-	KeysSyncIn(newMasterPass []byte, newKeys *api.SyncKeys) error
+	// KeysGenerateNew generates new keys for the vault and encrypts them with the given master password
+	KeysGenerateNew(masterPass []byte) error
+	// KeysPut stores the vault keys
+	KeysPut(masterPass []byte, keys *models.Keys) error
+	// KeysGet returns the vault keys
+	KeysGet() (*models.Keys, error)
+	// KeysReEncrypt re-encrypts the keys with the new master password
+	KeysReEncrypt(oldMasterPass, newMasterPass []byte) error
+	// KeysExist returns true if the vault keys are available
+	KeysExist() bool
 }
