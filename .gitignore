@@ -24,3 +24,6 @@ vendor/
 # Local data directory
 .data
 
+# Various
+*.bkp
+*.dtmp
